@@ -4,12 +4,10 @@ import db from '.';
 
 class User extends Model {
   id!: number;
+  username!: string;
+  role!: string;
   email!: string;
-  passwordHash!: string;
-  name!: string;
-  phone!: string;
-  createdAt!: Date;
-  updatedAt!: Date;
+  password!: string;
 }
 
 User.init({
