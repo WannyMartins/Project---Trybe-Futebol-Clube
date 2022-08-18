@@ -6,7 +6,7 @@ chai.use(chaiHttp);
 describe('Users', () => {
   describe('List', () => {
     it('estando correto retorna status code 200', () =>{
-      chai.request(app)
+      
     })
   })
 })
