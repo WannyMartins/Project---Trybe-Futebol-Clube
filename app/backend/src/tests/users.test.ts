@@ -11,6 +11,7 @@ const {expect} = chai;
 chai.use(chaiHttp);
 
 import { Response } from 'superagent';
+import { log } from 'console';
 
 const userMock = {
   "username": "User",
@@ -114,6 +115,20 @@ describe('Users', () => {
     Sinon.restore();
 
 })
+
+
+it('testando status 500', async () =>{
+  Sinon.stub(UsersModel, 'findAll').resolves([])
+
+chaiHttpResponse = await chai.request(app)
+.post('/login').send(userLoginMock)
+
+
+expect(chaiHttpResponse.status).to.equal(500)
+Sinon.restore();
+
+})
+
 
 
   })
