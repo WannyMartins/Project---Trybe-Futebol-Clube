@@ -9,9 +9,6 @@ const errorMiddleware: ErrorRequestHandler = (err, _req, res, _next) => {
     case 'InvalidData':
       res.status(400).json({ message });
       break;
-    // case 'NotFoundError':
-    //   res.status(404).json({ message });
-    //   break;
     default:
       res.status(500).end();
       break;

@@ -23,4 +23,15 @@ export default class LoginService implements ILoginService {
     const token = AuthJwt.sign({ email: user.email, password });
     return token;
   }
+
+  async loginValidate(param: string): Promise<string> {
+    const email = AuthJwt.verify(param);
+    const user = await this._user.findOne({ where: { email } });
+    if (!user) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+    return user.role;
+  }
 }

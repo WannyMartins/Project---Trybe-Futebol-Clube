@@ -14,4 +14,17 @@ export default class LoginController {
 
     return res.status(200).json({ token });
   }
+
+  async loginValidate(req: Request, res: Response) {
+    const { authorization } = req.headers;
+    if (!authorization) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+
+    const role = await this._user.loginValidate(authorization);
+
+    return res.status(200).json({ role });
+  }
 }
