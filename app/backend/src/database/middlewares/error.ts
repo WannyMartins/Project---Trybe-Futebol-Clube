@@ -12,9 +12,6 @@ const errorMiddleware: ErrorRequestHandler = (err, _req, res, _next) => {
     case 'InvalidData':
       res.status(400).json({ message });
       break;
-    case 'SequelizeConnectionRefusedError':
-      res.status(503).end();
-      break;
     default:
       res.status(500).json({ message });
       break;

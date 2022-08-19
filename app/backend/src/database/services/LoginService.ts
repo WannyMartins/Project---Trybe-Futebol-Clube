@@ -8,7 +8,6 @@ export default class LoginService implements ILoginService {
   private _user = User;
   async login({ email, password }: ILogin): Promise<string> {
     const user = await this._user.findOne({ where: { email } });
-    console.log(user);
     if (!user) {
       const e = new Error('Incorrect email or password');
       e.name = 'ValidationError';
