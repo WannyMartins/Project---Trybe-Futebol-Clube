@@ -19,7 +19,7 @@ export default class TeamService {
   async getById(id: number): Promise<ITeams> {
     const team = await this._team.findByPk(id);
 
-    if (!team) {
+    if (team === null) {
       const e = new Error('Not Found');
       e.name = 'NotFound';
       throw e;

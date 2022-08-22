@@ -8,9 +8,8 @@ export default class AuthJwt {
     return sign(data, jwtSecret);
   }
 
-  static verify(token: string): string {
+  static verify(token: string): string | null {
     const { email } = verify(token, jwtSecret) as JwtPayload;
-
     return email;
   }
 }
