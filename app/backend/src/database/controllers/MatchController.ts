@@ -6,7 +6,6 @@ export default class MatchController {
 
   async getAll(req: Request, res: Response) {
     const matches = await this._match.getAll();
-
     return res.status(200).json(matches);
   }
 }
