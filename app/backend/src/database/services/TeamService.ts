@@ -15,4 +15,16 @@ export default class TeamService {
 
     return teams;
   }
+
+  async getById(id: number): Promise<ITeams> {
+    const team = await this._team.findByPk(id);
+
+    if (!team) {
+      const e = new Error('Not Found');
+      e.name = 'NotFound';
+      throw e;
+    }
+
+    return team;
+  }
 }

@@ -2,7 +2,7 @@ import * as express from 'express';
 import 'express-async-errors';
 import error from './database/middlewares/error';
 import loginRoute from './database/routes/RouteLogin';
-import teamRoute from './database/routes/RoutTeam';
+import teamRoute from './database/routes/RouteTeam';
 
 class App {
   public app: express.Express;
