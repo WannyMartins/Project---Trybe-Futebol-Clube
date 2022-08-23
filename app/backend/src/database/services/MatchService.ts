@@ -30,7 +30,7 @@ export default class MatchService {
 
   async getById(id: number): Promise<IMatch> {
     const match = await this._match.findByPk(Number(id));
-    if (!match) {
+    if (match === null) {
       const e = new Error('There is no team with such id!');
       e.name = 'NotFound';
       throw e;
@@ -42,8 +42,8 @@ export default class MatchService {
   async create(data: IMatchPost): Promise<IMatch> {
     const { homeTeam, awayTeam } = data;
 
-    await this.getById(Number(homeTeam));
-    await this.getById(Number(awayTeam));
+    await this.getById(homeTeam);
+    await this.getById(awayTeam);
 
     const match = await this._match.create({ ...data, inProgress: true });
     return match as IMatch;

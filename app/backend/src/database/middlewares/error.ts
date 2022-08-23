@@ -2,6 +2,7 @@ import { ErrorRequestHandler } from 'express';
 
 const errorMiddleware: ErrorRequestHandler = (err, _req, res, _next) => {
   const { name, message } = err;
+  console.log(message);
   switch (name) {
     case 'ValidationError':
       res.status(401).json({ message });
