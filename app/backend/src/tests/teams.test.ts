@@ -10,27 +10,7 @@ chai.use(chaiHttp);
 
 import { Response } from 'superagent';
 import Team from '../database/models/TeamsModel';
-
-
-const teamsMock = [
-  {
-    "id": 1,
-    "teamName": "Avaí/Kindermann"
-  },
-  {
-    "id": 2,
-    "teamName": "Bahia"
-  },
-  {
-    "id": 3,
-    "teamName": "Botafogo"
-  }
-]
-
-const teamMockId = {
-  "id": 3,
-  "teamName": "Botafogo"
-}
+import { teamMockId, teamsMock } from './mocks/mockTeams';
 
 
 describe('Teams', () => {
@@ -121,15 +101,13 @@ describe('Teams', () => {
 
 
       it('retorna NotFound', async () =>{
-        it('o parametro passado não corresponde ao um time do bd', async () =>{
        
           chaiHttpResponse = await chai.request(app)
           .get('/teams/1000')
   
           console.log(chaiHttpResponse.body)
           expect(chaiHttpResponse.status).to.equal(404)
-          expect(chaiHttpResponse.body).to.deep.equal('Not Found')
-      })
+          expect(chaiHttpResponse.body).to.deep.equal({ message: 'Not Found' })
   
   })
 })
