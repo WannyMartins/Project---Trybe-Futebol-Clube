@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import * as Sinon from 'sinon';
 import { app } from '../app';
-import ILogin from '../database/interfaces/ILogin';
 import UsersModel from '../database/models/UsersModel';
  // @ts-ignore
 import chaiHttp = require('chai-http');
@@ -12,18 +11,8 @@ chai.use(chaiHttp);
 
 import { Response } from 'superagent';
 import AuthJwt from '../database/utils/AuthJwt';
+import { userLoginMock, userMock, userTokenMock } from './mocks/mockUsers';
 
-const userMock = {
-  "username": "User",
-  "role": "user",
-  "email": "user@user.com",
-  "password": "$2a$08$Y8Abi8jXvsXyqm.rmp0B.uQBA5qUz7T6Ghlg/CvVr/gLxYj5UAZVO",
-}
-
-const userLoginMock: ILogin = {
-  email: 'user@user.com',
-  password: 'secret_user'
-}
 
 describe('Users', () => {
   describe('Login', () => {
@@ -142,7 +131,7 @@ describe('Users', () => {
 
       beforeEach(() => {
         Sinon.stub(UsersModel, 'findOne').resolves({...userMock} as UsersModel)
-        Sinon.stub(AuthJwt, 'verify').resolves('user@user.com' as AuthJwt)
+        Sinon.stub(AuthJwt, 'verify').returns('user@user.com')
       
       })
 
@@ -171,7 +160,7 @@ describe('Users', () => {
 
       it('usuário não autorizado retorna status code 401', async () =>{
         Sinon.stub(UsersModel, 'findOne').resolves(null)
-        Sinon.stub(AuthJwt, 'verify').resolves('email@email.com' as AuthJwt)
+        Sinon.stub(AuthJwt, 'verify').returns('email@email.com')
 
         
           chaiHttpResponse = await chai.request(app)
@@ -180,12 +169,14 @@ describe('Users', () => {
           expect(chaiHttpResponse.status).to.equal(401)
           expect(chaiHttpResponse.body).to.deep.equal({message: "Unauthorized"})
 
+         
           Sinon.restore();
       })
 
 
       it('usuário não localizado no bd retorna status code 401', async () =>{
-        Sinon.stub(UsersModel, 'findOne').resolves(null)
+        // Sinon.stub(UsersModel, 'findOne').resolves(null)
+        Sinon.stub(AuthJwt, 'verify').returns(null)
 
         const token: Response = await chai.request(app)
         .post('/login')
@@ -199,6 +190,14 @@ describe('Users', () => {
 
           Sinon.restore();
       })
+
+      it('validando usuário atravez do token', async () =>{
+        
+
+          expect(AuthJwt.verify(userTokenMock)).to.equal('user@user.com')
+
+      })
+
     })
     })
 

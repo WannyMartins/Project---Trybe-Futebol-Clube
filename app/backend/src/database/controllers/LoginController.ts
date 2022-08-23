@@ -5,7 +5,8 @@ export default class LoginController {
   constructor(private _user: LoginService) { }
 
   async login(req: Request, res: Response) {
-    if (!req.body.email || !req.body.password) {
+    const { email, password } = req.body;
+    if (!email || !password) {
       const e = new Error('All fields must be filled');
       e.name = 'InvalidData';
       throw e;
