@@ -105,8 +105,7 @@ describe('Teams', () => {
           chaiHttpResponse = await chai.request(app)
           .get('/teams/1000')
   
-          console.log(chaiHttpResponse.body)
-          expect(chaiHttpResponse.status).to.equal(404)
+                  expect(chaiHttpResponse.status).to.equal(404)
           expect(chaiHttpResponse.body).to.deep.equal({ message: 'Not Found' })
   
   })
