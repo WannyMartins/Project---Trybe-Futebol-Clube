@@ -14,4 +14,17 @@ export default class MatchService {
     });
     return match as IMatch[];
   }
+
+  async filterInProgress(inProgress: boolean): Promise<IMatch[]> {
+    const match = await this._match.findAll({
+      include: [{
+        model: Team, as: 'teamHome', attributes: ['teamName'],
+      }, {
+        model: Team, as: 'teamAway', attributes: ['teamName'],
+      }],
+      where: { inProgress },
+    });
+
+    return match as IMatch[];
+  }
 }
