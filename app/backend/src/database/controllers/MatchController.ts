@@ -53,4 +53,19 @@ export default class MatchController {
     await this._match.finish(Number(id));
     return res.status(200).json({ message: 'Finished' });
   }
+
+  async updateGoals(req: Request, res: Response) {
+    const { authorization } = req.headers;
+    const { id } = req.params;
+
+    const validUser = AuthJwt.verify(authorization as string);
+    if (!authorization || validUser === null) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+
+    await this._match.updateGoals(Number(id), req.body);
+    return res.status(200).json({ message: 'Update Goals!' });
+  }
 }

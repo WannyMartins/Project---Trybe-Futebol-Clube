@@ -70,4 +70,22 @@ export default class MatchService {
       { where: { id } },
     );
   }
+
+  async updateGoals(id: number, data: IMatch): Promise<void> {
+    const { homeTeamGoals, awayTeamGoals } = data;
+
+    const match = await this.getById(Number(id));
+
+    if (!match || match.inProgress === false) {
+      const e = new Error('There is no team with such id or match finished!');
+      e.name = 'NotFound';
+      throw e;
+    }
+
+    await this._match.update(
+      { homeTeamGoals: Number(homeTeamGoals),
+        awayTeamGoals: Number(awayTeamGoals) },
+      { where: { id } },
+    );
+  }
 }
