@@ -10,7 +10,7 @@ chai.use(chaiHttp);
 
 import { Response } from 'superagent';
 import Match from '../database/models/MatchesModels';
-import { inProgressMatchesMock, matchesMock } from './mocks/mockMatches';
+import { inProgressFalseMock, inProgressTrueMock, matchesMock } from './mocks/mockMatches';
 
 
 
@@ -42,19 +42,34 @@ describe('Matches', () => {
     describe('Quando dá certo', () => {
 
       let chaiHttpResponse: Response;
-      it('estando correto retorna status code 200 e a lista de partidas no bd', async () =>{
+      it('estando correto retorna status code 200 e a lista de partidas em andamento no bd', async () =>{
 
         Sinon.stub(Match, 'findAll')
-        .resolves(inProgressMatchesMock as unknown as Match[])
+        .resolves(inProgressTrueMock as unknown as Match[])
 
           chaiHttpResponse = await chai.request(app)
-          .get('/matches').set({"query": "inProgress=true"})
+          .get('/matches?inProgress=true')
 
           expect(chaiHttpResponse.status).to.equal(200)
-          expect(chaiHttpResponse.body).to.deep.equal(inProgressMatchesMock)
+          expect(chaiHttpResponse.body).to.deep.equal(inProgressTrueMock)
           Sinon.restore();
 
         })
+
+        it('estando correto retorna status code 200 e a lista de partidas em finalizadas no bd', async () =>{
+
+          Sinon.stub(Match, 'findAll')
+          .resolves(inProgressFalseMock as unknown as Match[])
+  
+            chaiHttpResponse = await chai.request(app)
+            .get('/matches?inProgress=false')
+  
+            expect(chaiHttpResponse.status).to.equal(200)
+            expect(chaiHttpResponse.body).to.deep.equal(inProgressFalseMock)
+            Sinon.restore();
+  
+          })
+  
     })
     
   })
