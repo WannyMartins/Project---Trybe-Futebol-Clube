@@ -8,8 +8,14 @@ export default class AuthJwt {
     return sign(data, jwtSecret);
   }
 
-  static verify(token: string): string | null {
-    const { email } = verify(token, jwtSecret) as JwtPayload;
-    return email;
+  static verify(token: string): string | null | undefined {
+    try {
+      const { email } = verify(token, jwtSecret) as JwtPayload;
+      return email;
+    } catch (e) {
+      const erro = new Error('Token must be a valid token');
+      erro.name = 'ValidationError';
+      throw erro;
+    }
   }
 }
