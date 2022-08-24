@@ -9,6 +9,12 @@ export default class MatchController {
 
   async getAllMatch(req: Request, res: Response) {
     const { inProgress } = req.query;
+    const { authorization } = req.headers;
+    if (!authorization) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
 
     const inProgressTrue: boolean = inProgress === 'true';
     if (!inProgress) {
