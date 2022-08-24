@@ -10,7 +10,10 @@ chai.use(chaiHttp);
 
 import { Response } from 'superagent';
 import Match from '../database/models/MatchesModels';
-import { inProgressFalseMock, inProgressTrueMock, matchesMock } from './mocks/mockMatches';
+import MatchService from '../database/services/MatchService';
+import { dataMatchCreatedMock, inProgressFalseMock, inProgressTrueMock, matchCreatedMock, matchesMock } from './mocks/mockMatches';
+import AuthJwt from '../database/utils/AuthJwt';
+import { userLoginMock, userTokenMock } from './mocks/mockUsers';
 
 
 
@@ -74,6 +77,55 @@ describe('Matches', () => {
     
   })
 
+  describe('create', () => {
+    describe('Quando dá certo', () => {
+
+      let chaiHttpResponse: Response;
+      it('estando correto retorna status code 201 e os dados atualizados no db corretamente', async () =>{
+
+
+        Sinon.stub(Match, 'create')
+        .resolves(matchCreatedMock as unknown as Match)
+
+
+
+          chaiHttpResponse = await chai.request(app)
+          .post('/matches')
+          .set({"Authorization": userTokenMock})
+          .send(dataMatchCreatedMock)
+
+
+          expect(chaiHttpResponse.status).to.equal(201)
+          expect(chaiHttpResponse.body)
+          .to.deep.equal(matchCreatedMock)
+          Sinon.restore();
+
+        })
+
+        describe('Quando dá errado', () => {
+
+          let chaiHttpResponse: Response;
+          it('estando quando o token passado é inválido ou não existe', async () =>{
+    
+    
+            Sinon.stub(Match, 'create').resolves(undefined)
+            Sinon.stub(AuthJwt, 'verify').returns(null)
+              chaiHttpResponse = await chai.request(app)
+              .post('/matches')
+              .set({"Authorization": 'tokenfake'})
+              .send(dataMatchCreatedMock)
+    
+    
+              expect(chaiHttpResponse.status).to.equal(401)
+              expect(chaiHttpResponse.body).to.deep.equal({ message: 'Unauthorized' } )
+              Sinon.restore();
+    
+            })
+          })
+
+    })
+    
+  })
 
 
 })

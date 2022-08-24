@@ -736,4 +736,20 @@ const inProgressFalseMock = [
   }
 ]
 
-export { matchesMock, inProgressTrueMock, inProgressFalseMock };
+const matchCreatedMock = {
+  "id": 1,
+  "homeTeam": 16,
+  "awayTeam": 8,
+  "homeTeamGoals": 2,
+  "awayTeamGoals": 2,
+  "inProgress": true,
+}
+
+const dataMatchCreatedMock = {
+  "homeTeam": 16,
+  "awayTeam": 8, 
+  "homeTeamGoals": 2,
+  "awayTeamGoals": 2
+}
+
+export { matchesMock, inProgressTrueMock, matchCreatedMock, inProgressFalseMock, dataMatchCreatedMock };
