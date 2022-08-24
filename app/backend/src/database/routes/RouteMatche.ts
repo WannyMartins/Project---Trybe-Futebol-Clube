@@ -9,6 +9,5 @@ const matchRoute = Router();
 
 matchRoute.get('/matches', (req, res) => matchController.getAll(req, res));
 matchRoute.post('/matches', (req, res) => matchController.create(req, res));
-matchRoute.get('/matches', (req, res) => matchController.filterInProgress(req, res));
 
 export default matchRoute;
