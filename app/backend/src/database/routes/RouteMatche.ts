@@ -7,7 +7,7 @@ const matchController = new MatchController(matchService);
 
 const matchRoute = Router();
 
-matchRoute.get('/matches', (req, res) => matchController.getAll(req, res));
+matchRoute.get('/matches', (req, res) => matchController.getAllMatch(req, res));
 matchRoute.patch('/matches/:id/finish', (req, res) => matchController.finish(req, res));
 matchRoute.post('/matches', (req, res) => matchController.create(req, res));
 

@@ -1,10 +1,12 @@
 import IMatch, { IMatchPost } from '../interfaces/IMatches';
 import Match from '../models/MatchesModels';
 import Team from '../models/TeamsModel';
+import TeamService from './TeamService';
 
 export default class MatchService {
   private _match = Match;
-  async getAll(): Promise<IMatch[]> {
+  private _teamService: TeamService;
+  async getAllMatch(): Promise<IMatch[]> {
     const match = await this._match.findAll({
       include: [{
         model: Team, as: 'teamHome', attributes: ['teamName'],
@@ -40,6 +42,15 @@ export default class MatchService {
 
   async create(data: IMatchPost): Promise<IMatch> {
     const { homeTeam, awayTeam } = data;
+
+    const timeCasa = await Team.findByPk(homeTeam);
+    const timeFora = await Team.findByPk(awayTeam);
+
+    if (timeCasa === null || timeFora === null) {
+      const e = new Error('There is no team with such id!');
+      e.name = 'NotFound';
+      throw e;
+    }
 
     if (homeTeam === awayTeam) {
       const e = new Error('It is not possible to create a match with two equal teams');

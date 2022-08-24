@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
 import { IMatchPost } from '../interfaces/IMatches';
+import User from '../models/UsersModel';
 import MatchService from '../services/MatchService';
 import AuthJwt from '../utils/AuthJwt';
 
 export default class MatchController {
   constructor(private _match: MatchService) { }
 
-  async getAll(req: Request, res: Response) {
+  async getAllMatch(req: Request, res: Response) {
     const { inProgress } = req.query;
+
     const inProgressTrue: boolean = inProgress === 'true';
     if (!inProgress) {
-      const matches = await this._match.getAll();
+      const matches = await this._match.getAllMatch();
       return res.status(200).json(matches);
     }
     const matches = await this._match.filterInProgress(inProgressTrue);
@@ -19,10 +21,16 @@ export default class MatchController {
 
   async create(req: Request, res: Response) {
     const { authorization } = req.headers;
-
-    const validUser = AuthJwt.verify(authorization as string);
-    if (!authorization || validUser === null) {
+    if (!authorization) {
       const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+    const email = AuthJwt.verify(authorization as string);
+    const valid = await User.findOne({ where: { email } });
+
+    if (!valid) {
+      const e = new Error('Token must be a valid token');
       e.name = 'ValidationError';
       throw e;
     }
