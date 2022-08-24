@@ -30,4 +30,19 @@ export default class MatchController {
     const matches = await this._match.create(req.body as IMatchPost);
     return res.status(201).json(matches);
   }
+
+  async finish(req: Request, res: Response) {
+    const { authorization } = req.headers;
+    const { id } = req.params;
+
+    const validUser = AuthJwt.verify(authorization as string);
+    if (!authorization || validUser === null) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+
+    await this._match.finish(Number(id));
+    return res.status(200).json({ message: 'Finished' });
+  }
 }

@@ -28,15 +28,15 @@ export default class MatchService {
     return match as IMatch[];
   }
 
-  // async getById(id: number): Promise<boolean> {
-  //   const match = await this._match.findByPk(Number(id));
-  //   if (match === null) {
-  //     const e = new Error('There is no team with such id!');
-  //     e.name = 'NotFound';
-  //     throw e;
-  //   }
-  //   return true;
-  // }
+  async getById(id: number): Promise<IMatch> {
+    const match = await this._match.findByPk(Number(id));
+    if (match === null) {
+      const e = new Error('There is no match with such id!');
+      e.name = 'NotFound';
+      throw e;
+    }
+    return match;
+  }
 
   async create(data: IMatchPost): Promise<IMatch> {
     // const { homeTeam, awayTeam } = data;
@@ -46,5 +46,20 @@ export default class MatchService {
 
     const match: IMatch = await this._match.create({ ...data, inProgress: true });
     return match;
+  }
+
+  async finish(id: number): Promise<void> {
+    const existeMatchId = await this.getById(id);
+
+    if (!existeMatchId) {
+      const e = new Error('There is no match with such id!');
+      e.name = 'NotFound';
+      throw e;
+    }
+
+    await this._match.update(
+      { inProgress: false },
+      { where: { id } },
+    );
   }
 }
