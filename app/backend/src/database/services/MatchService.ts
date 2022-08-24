@@ -39,23 +39,20 @@ export default class MatchService {
   }
 
   async create(data: IMatchPost): Promise<IMatch> {
-    // const { homeTeam, awayTeam } = data;
+    const { homeTeam, awayTeam } = data;
 
-    // await this.getById(homeTeam);
-    // await this.getById(awayTeam);
+    if (homeTeam === awayTeam) {
+      const e = new Error('It is not possible to create a match with two equal teams');
+      e.name = 'ValidationError';
+      throw e;
+    }
 
     const match: IMatch = await this._match.create({ ...data, inProgress: true });
     return match;
   }
 
   async finish(id: number): Promise<void> {
-    const existeMatchId = await this.getById(id);
-
-    if (!existeMatchId) {
-      const e = new Error('There is no match with such id!');
-      e.name = 'NotFound';
-      throw e;
-    }
+    await this.getById(id);
 
     await this._match.update(
       { inProgress: false },

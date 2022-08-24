@@ -20,7 +20,7 @@ export default class TeamService {
     const team = await this._team.findByPk(id);
 
     if (team === null) {
-      const e = new Error('Not Found');
+      const e = new Error('There is no team with such id!');
       e.name = 'NotFound';
       throw e;
     }
