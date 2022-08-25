@@ -1,11 +1,9 @@
 import IMatch, { IMatchPost } from '../interfaces/IMatches';
 import Match from '../models/MatchesModels';
 import Team from '../models/TeamsModel';
-import TeamService from './TeamService';
 
 export default class MatchService {
   private _match = Match;
-  private _teamService: TeamService;
   async getAllMatch(): Promise<IMatch[]> {
     const match = await this._match.findAll({
       include: [{
