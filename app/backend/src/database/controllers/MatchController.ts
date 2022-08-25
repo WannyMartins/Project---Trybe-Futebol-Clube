@@ -3,12 +3,10 @@ import { IMatchPost } from '../interfaces/IMatches';
 import User from '../models/UsersModel';
 import MatchService from '../services/MatchService';
 import AuthJwt from '../utils/AuthJwt';
-import LoginController from './LoginController';
 
 export default class MatchController {
   constructor(
     private _match: MatchService,
-    private _user: LoginController,
   ) { }
 
   async getAllMatch(req: Request, res: Response) {
