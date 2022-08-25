@@ -35,6 +35,7 @@ export default class MatchService {
       e.name = 'NotFound';
       throw e;
     }
+    console.log(match);
     return match;
   }
 
