@@ -7,7 +7,10 @@ const matchController = new MatchController(matchService);
 
 const matchRoute = Router();
 
-matchRoute.get('/matches', (req, res) => matchController.getAllMatch(req, res));
+matchRoute.get(
+  '/matches',
+  (req, res) => matchController.getAllMatch(req, res),
+);
 
 matchRoute.patch('/matches/:id', (req, res) => matchController.updateGoals(req, res));
 matchRoute.patch('/matches/:id/finish', (req, res) => matchController.finish(req, res));
