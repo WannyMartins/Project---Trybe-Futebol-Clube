@@ -3,20 +3,33 @@ import { IMatchPost } from '../interfaces/IMatches';
 import User from '../models/UsersModel';
 import MatchService from '../services/MatchService';
 import AuthJwt from '../utils/AuthJwt';
+import LoginController from './LoginController';
 
 export default class MatchController {
-  constructor(private _match: MatchService) { }
+  constructor(
+    private _match: MatchService,
+    private _user: LoginController,
+  ) { }
 
   async getAllMatch(req: Request, res: Response) {
     const { inProgress } = req.query;
-
-    const inProgressTrue: boolean = inProgress === 'true';
+    const { authorization } = req.headers;
+    if (!authorization) {
+      const e = new Error('Unauthorized');
+      e.name = 'ValidationError';
+      throw e;
+    }
+    const email = AuthJwt.verify(authorization as string);
+    if (!await User.findOne({ where: { email } })) {
+      const e = new Error('Token must be a valid token');
+      e.name = 'ValidationError';
+      throw e;
+    }
     if (!inProgress) {
       const matches = await this._match.getAllMatch();
       return res.status(200).json(matches);
     }
-    const matches = await this._match.filterInProgress(inProgressTrue);
-    return res.status(200).json(matches);
+    return res.status(200).json(await this._match.filterInProgress(inProgress === 'true'));
   }
 
   async create(req: Request, res: Response) {
