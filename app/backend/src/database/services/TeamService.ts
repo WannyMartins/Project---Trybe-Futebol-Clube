@@ -4,7 +4,7 @@ import Team from '../models/TeamsModel';
 export default class TeamService {
   private _team = Team;
 
-  async getAll(): Promise<Array<ITeams>> {
+  async getAll(): Promise<ITeams[]> {
     const teams = await this._team.findAll();
 
     if (!teams) {

@@ -1,13 +1,15 @@
-// import { Router } from 'express';
+import { Router } from 'express';
+import LeaderboardController from '../controllers/LeaderboardController';
+import LeaderboardService from '../services/LeaderboardService';
+import MatchService from '../services/MatchService';
+import TeamService from '../services/TeamService';
 
-// const leaderboardService = new LeaderboardService();
-// const leaderboardController = new LeaderboardController(leaderboardService);
+const matchService = new MatchService();
+const teamService = new TeamService();
+const leaderService = new LeaderboardService(matchService, teamService);
+const leaderController = new LeaderboardController(leaderService, teamService);
 
-// const learderRoute = Router();
-// learderRoute
-//   .get(
-//     '/leaderboard/home',
-//     (req, res) => leaderboardController.leaderboardTable(req, res),
-//   );
+const leaderRoute = Router();
+leaderRoute.get('/leaderboard/home', (req, res) => leaderController.table(req, res));
 
-// export default learderRoute;
+export default leaderRoute;

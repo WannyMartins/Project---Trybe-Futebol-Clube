@@ -11,18 +11,6 @@ export default class MatchController {
 
   async getAllMatch(req: Request, res: Response) {
     const { inProgress } = req.query;
-    // const { authorization } = req.headers;
-    // if (!authorization) {
-    //   const e = new Error('Unauthorized');
-    //   e.name = 'ValidationError';
-    //   throw e;
-    // }
-    // const email = AuthJwt.verify(authorization as string);
-    // if (!await User.findOne({ where: { email } })) {
-    //   const e = new Error('Token must be a valid token');
-    //   e.name = 'ValidationError';
-    //   throw e;
-    // }
     if (!inProgress) {
       const matches = await this._match.getAllMatch();
       return res.status(200).json(matches);
