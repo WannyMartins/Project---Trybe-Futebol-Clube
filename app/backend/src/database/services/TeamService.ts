@@ -13,7 +13,7 @@ export default class TeamService {
       throw e;
     }
 
-    return teams;
+    return teams as ITeams[];
   }
 
   async getById(id: number): Promise<ITeams> {

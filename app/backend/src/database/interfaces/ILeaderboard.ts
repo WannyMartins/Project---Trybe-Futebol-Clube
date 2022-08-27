@@ -1,7 +1,4 @@
-export default interface ILeaderboard{
-  name: string,
-  totalPoints: number,
-  totalGames: number,
+export default interface ILeaderboard extends ILeader{
   totalVictories: number,
   totalDraws: number,
   totalLosses: number,
@@ -9,4 +6,12 @@ export default interface ILeaderboard{
   goalsOwn: number,
   goalsBalance: number,
   efficiency: number
+}
+
+export interface ILeader {
+
+  name: string,
+  totalPoints: number,
+  totalGames: number,
+
 }

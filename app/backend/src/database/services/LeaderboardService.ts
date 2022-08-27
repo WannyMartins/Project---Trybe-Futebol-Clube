@@ -1,92 +1,88 @@
+import IBoardFilter, { IBoard } from '../interfaces/IBoards';
 import ILeaderboard from '../interfaces/ILeaderboard';
-import MatchService from './MatchService';
-import TeamService from './TeamService';
-
-// name: string,
-// totalPoints: number,
-// totalGames: number,
-// totalVictories: number,
-// totalDraws: number,
-// totalLosses: number,
-// goalsFavor: number,
-// goalsOwn: number,
-// goalsBalance: number,
-// efficiency: number
-// }
+import Match from '../models/MatchesModels';
+import Team from '../models/TeamsModel';
+import LBCalc from '../utils/LeaderboardCalc';
 
 export default class LeaderboardService {
-  constructor(
-    private _team: TeamService,
-    private _match: MatchService,
-    private _leaderboard: ILeaderboard,
-  ) {}
+  private _team = Team;
+  private _match = Match;
 
-  async totalGames(idT: number): Promise<void> {
-    const matchesFinished = await this._match.filterInProgress(false);
-    const team = await this._team.getById(idT);
-    const { id, teamName } = team;
-    let games = 0;
-
-    matchesFinished.forEach((t) => {
-      if (t.homeTeam === id || t.awayTeam === id) {
-        games += 1;
-        this._leaderboard.name = teamName;
-        return games;
-      }
-    });
-
-    this._leaderboard.totalGames = games;
+  async getTableFilter(): Promise<IBoardFilter[]> { // query para separar os dados da mesma tabela personalizando o que time mandante e o que é da casa
+    const teams: Team[] = await this._team.findAll({ include: [
+      { model: this._match, as: 'matchesHome', where: { inProgress: false } },
+      { model: this._match, as: 'matchesAway', where: { inProgress: false } },
+    ] });
+    return teams as unknown as IBoardFilter[];
   }
 
-  async totalPoints(idT: number): Promise<void> {
-    const matchesFinished = await this._match.filterInProgress(false);
-    const team = await this._team.getById(idT);
-    const home = this._leaderboard;
-    const away = this._leaderboard;
-
-    matchesFinished.forEach((t) => {
-      if (t.homeTeam === team.id) {
-        if (t.homeTeamGoals > t.awayTeamGoals) {
-          home.totalPoints += 3;
-          away.totalPoints += 0;
-        } else if (t.homeTeamGoals < t.awayTeamGoals) {
-          away.totalPoints += 3;
-          home.totalPoints += 0;
-        } else {
-          away.totalPoints += 1;
-          home.totalPoints += 1;
-        }
-      }
-    });
+  async getTable(): Promise<IBoard[]> {
+    const teams: Team[] = await this._team.findAll({ include: [
+      { model: this._match, as: 'matches', where: { inProgress: false } },
+    ] });
+    return teams as unknown as IBoard[];
   }
 
-  // async efficiency(id: number): Promise<number[]> {
-  //   const match = await this.checkMatchValid(id);
-  //   const home = this._leaderboard;
-  //   const away = this._leaderboard;
+  async classificationTableHome(): Promise<ILeaderboard[]> {
+    const teamsData = await this.getTableFilter();
+    const score: ILeaderboard[] = teamsData.map((el) => {
+      const scoreTotalH = LBCalc.scoreTotalHome(el.matchesHome);
+      const totalGoalsHome = LBCalc.totalGoalsHome(el.matchesHome);
+      return {
+        name: el.teamName,
+        totalPoints: scoreTotalH.totalPoints,
+        totalGames: el.matchesHome.length,
+        totalVictories: scoreTotalH.totalVictories,
+        totalDraws: scoreTotalH.totalDraws,
+        totalLosses: scoreTotalH.totalLosses,
+        goalsFavor: totalGoalsHome.goalsFavor,
+        goalsOwn: totalGoalsHome.goalsOwn,
+        goalsBalance: totalGoalsHome.goalsBalance,
+        efficiency: LBCalc.efficiency(scoreTotalH.totalPoints, el.matchesHome.length),
+      };
+    });
+    return LBCalc.order(score) as unknown as ILeaderboard[];
+  }
 
-  //   const { homeTeam, awayTeam } = match;
+  async classificationTableAway(): Promise<ILeaderboard[]> {
+    const teamsData = await this.getTableFilter();
+    const score: ILeaderboard[] = teamsData.map((el) => {
+      const scoreTotalA = LBCalc.scoreTotalAway(el.matchesAway);
+      const totalGoalsAway = LBCalc.totalGoalsAway(el.matchesAway);
+      return {
+        name: el.teamName,
+        totalPoints: scoreTotalA.totalPoints,
+        totalGames: el.matchesAway.length,
+        totalVictories: scoreTotalA.totalVictories,
+        totalDraws: scoreTotalA.totalDraws,
+        totalLosses: scoreTotalA.totalLosses,
+        goalsFavor: totalGoalsAway.goalsFavor,
+        goalsOwn: totalGoalsAway.goalsOwn,
+        goalsBalance: totalGoalsAway.goalsBalance,
+        efficiency: LBCalc.efficiency(scoreTotalA.totalPoints, el.matchesAway.length),
+      };
+    });
+    return LBCalc.order(score) as unknown as ILeaderboard[];
+  }
 
-  //   const pointsHome: number[] = await this.totalPoints(homeTeam);
-  //   const pointsAway: number[] = await this.totalPoints(awayTeam);
-  //   const gamesHome: number[] = await this.totalGames(homeTeam);
-  //   const gamesAway: number[] = await this.totalGames(awayTeam);
-
-  //   const resultHome = (pointsHome[0] / (gamesHome[0] * 3)) * 100;
-  //   const resultAway = (pointsAway[1] / (gamesAway[1] * 3)) * 100;
-
-  //   home.efficiency = resultHome;
-  //   away.efficiency = resultAway;
-
-  //   return [Number(home.efficiency.toFixed(2)), Number(away.efficiency.toFixed(2))];
-  // }
-
-  // async goalsBalance(id: number): Promise<number[]> {
-  //   const match = await this.checkMatchValid(id);
-  //   const home = this._leaderboard;
-  //   const away = this._leaderboard;
-
-  //   const { homeTeam, awayTeam } = match;
-
-  // }
+  async classificationTable(): Promise<ILeaderboard[]> {
+    const teamsData = await this.getTable();
+    const score: ILeaderboard[] = teamsData.map((el) => {
+      const scoreTotal = LBCalc.scoreTotal(el.matches);
+      const totalGoals = LBCalc.totalGoalsHome(el.matches);
+      return {
+        name: el.teamName,
+        totalPoints: scoreTotal.totalPoints,
+        totalGames: el.matches.length,
+        totalVictories: scoreTotal.totalVictories,
+        totalDraws: scoreTotal.totalDraws,
+        totalLosses: scoreTotal.totalLosses,
+        goalsFavor: totalGoals.goalsFavor,
+        goalsOwn: totalGoals.goalsOwn,
+        goalsBalance: totalGoals.goalsBalance,
+        efficiency: LBCalc.efficiency(scoreTotal.totalPoints, el.matches.length),
+      };
+    });
+    return LBCalc.order(score) as unknown as ILeaderboard[];
+  }
 }

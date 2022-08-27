@@ -1,7 +1,7 @@
 import * as express from 'express';
 import 'express-async-errors';
 import error from './database/middlewares/error';
-// import learderRoute from './database/routes/RouteLeaderboard';
+import learderRoute from './database/routes/RouteLeaderboard';
 import loginRoute from './database/routes/RouteLogin';
 import matchRoute from './database/routes/RouteMatche';
 import teamRoute from './database/routes/RouteTeam';
@@ -31,7 +31,7 @@ class App {
     this.app.use(loginRoute);
     this.app.use(teamRoute);
     this.app.use(matchRoute);
-    // this.app.use(learderRoute);
+    this.app.use(learderRoute);
     this.app.use(error);
   }
 
